@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -55,12 +56,12 @@ class ImplServicePageTest {
     }
     @Test
     void deletePageByDate(){
-        PageDto newPage = new PageDto(UUID.randomUUID(),"TestByDateDelete",LocalDate.now().minusMonths(2));
-        when(mockRepository.getBycodePage(newPage.getCodePage())).thenReturn(null);
-        Exception exception = assertThrows(NotFound.class, () -> servicePage.deletePageByDate(newPage));
-        assertEquals("Erro ao deletar a pagina",exception.getMessage());
-        // O copilot me recomendou fazer algumas verificações sobre o UUID, mesmo que eu não ache muito necessario por o uuid ser gerado no momento
-        verify(mockRepository, never()).delete(any(Page.class));
-        //Caso ele relate o erro de pagina não encontrada significa que a verificação está funcionando, porem ele sempre mostrara o erro porque a pagina não foi criada no banco de dados
+        Page savedPage = new Page(UUID.randomUUID(), "TestNewPage", LocalDate.now().minusDays(30));
+        when(mockRepository.save(any(Page.class))).thenReturn(savedPage);
+        when(mockRepository.getBycodePage(savedPage.getCodePage())).thenReturn(savedPage);
+        PageDto savedPageDto = servicePage.postPage(MapPage.mapToDto(savedPage));
+        assertNotNull(savedPageDto);
+        Exception exception = assertThrows(NotFound.class, () -> servicePage.getPageCode(savedPage.getCodePage()));
+        assertEquals(exception.getMessage(), "Erro ao deletar a pagina");
     }
 }

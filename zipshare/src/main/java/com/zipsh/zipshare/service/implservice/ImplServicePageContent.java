@@ -1,6 +1,7 @@
 package com.zipsh.zipshare.service.implservice;
 
 import com.zipsh.zipshare.dto.PageContentDto;
+import com.zipsh.zipshare.dto.PageDto;
 import com.zipsh.zipshare.exceptions.NotFound;
 import com.zipsh.zipshare.mapper.MapPage;
 import com.zipsh.zipshare.mapper.MapPageContent;
@@ -28,7 +29,7 @@ public class ImplServicePageContent implements ServicePageContent {
 
     @Override
     public List<PageContentDto> getPageContent(UUID pageId) {
-        return pageContentRepository.findAll().stream().filter(content -> content.getPage().getId().equals(pageId)).map((content) -> MapPageContent.mapToDto(content)).collect(Collectors.toList());
+        return pageContentRepository.findAll().stream().filter(content -> content.getPage() != null && content.getPage().getId().equals(pageId)).map((content) -> MapPageContent.mapToDto(content)).collect(Collectors.toList());
     }
 
     @Override
@@ -48,5 +49,15 @@ public class ImplServicePageContent implements ServicePageContent {
     public void delPageContent(UUID id) {
         PageContent pageContent = pageContentRepository.findById(id).orElseThrow(() -> new NotFound("Erro ao deletar o conteudo da pagina"));
         pageContentRepository.delete(pageContent);
+    }
+
+    @Override
+    public void delPageContentByPage(UUID pageId) {
+        //Reaproveitamento do metodo do próprio service
+        List<PageContentDto> pageContents = getPageContent(pageId);
+        for(PageContentDto content : pageContents){
+            pageContentRepository.delete(MapPageContent.mapToEnt(content));
+        }
+
     }
 }

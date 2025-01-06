@@ -12,11 +12,15 @@ public class MapPage {
                 dtoContent.getDatePage()
         );
     }
-    public static PageDto mapToDto(Page content){
+    public static PageDto mapToDto(Page content) {
+        if (content == null) {
+            throw new IllegalArgumentException("Page cannot be null");
+        }
         return new PageDto(
                 content.getId(),
                 content.getCodePage(),
                 content.getDatePage()
         );
     }
+
 }

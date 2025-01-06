@@ -13,6 +13,7 @@ import javax.swing.text.html.parser.Entity;
 import java.security.Provider;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("zipsh/page")
@@ -37,10 +38,17 @@ public class PageController {
         return new ResponseEntity<>(PagesList, HttpStatus.OK);
     }
 
+    @CrossOrigin(origins = "http://127.0.0.1:5500")
     @GetMapping("{code}")
     public ResponseEntity<PageDto> getCodePage(@PathVariable("code") String code){
             PageDto page = service.getPageCode(code);
             return new ResponseEntity<>(page, HttpStatus.FOUND);
+    }
+
+    @DeleteMapping("{id}")
+    public ResponseEntity<HttpStatus> deletePageById(@PathVariable("id") UUID id){
+        service.delPage(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
 
